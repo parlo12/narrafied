@@ -1,0 +1,42 @@
+name: Deploy frontend
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Package site
+        run: tar -czf site.tar.gz index.html styles.css dist
+
+      - name: Deploy over SSH
+        env:
+          SSH_HOST: ${{ secrets.DO_SSH_HOST }}
+          SSH_USER: ${{ secrets.DO_SSH_USER }}
+          SSH_KEY: ${{ secrets.DO_SSH_KEY }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH || '/var/www/narrafied' }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "mkdir -p $DEPLOY_PATH"
+          scp -o StrictHostKeyChecking=no site.tar.gz $SSH_USER@$SSH_HOST:$DEPLOY_PATH/
+          ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "cd $DEPLOY_PATH && tar -xzf site.tar.gz && rm site.tar.gz"

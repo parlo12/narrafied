@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Narrafied | Audio that feels like cinema</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="bg-texture"></div>
+  <header class="top-nav">
+    <div class="brand">
+      <div class="logo-mark">N</div>
+      <span class="logo-type">Narrafied</span>
+    </div>
+    <nav class="nav-links">
+      <a href="#library">Discover</a>
+      <a href="#features">Features</a>
+      <a href="#process">How it works</a>
+      <a href="#pricing">Pricing</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="ghost-btn" data-open-modal="signin-modal">Sign in</button>
+      <button class="primary-btn" data-open-modal="signup-modal">Start free</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="hero">
+      <div class="hero-content">
+        <div class="pill">New · Filmic sound design + TTS in minutes</div>
+        <h1>Turn any book into a <span>cinematic audio drama</span>.</h1>
+        <p class="hero-sub">Upload a file, choose the vibe, and our pipeline layers voice, music, and foley so your readers can listen like they’re in the scene.</p>
+        <div class="hero-actions">
+          <button class="primary-btn" data-open-modal="signup-modal">Start listening free</button>
+          <button class="ghost-btn" data-open-modal="signin-modal">I already have an account</button>
+        </div>
+        <div class="stats">
+          <div class="stat">
+            <span class="stat-number" data-count="3200">0</span>
+            <span class="stat-label">Books dramatized</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number" data-count="98">0</span>
+            <span class="stat-label">Avg. completion rate</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number" data-count="12">0</span>
+            <span class="stat-label">Soundscapes shipped weekly</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="glow"></div>
+        <div class="player-card">
+          <div class="tag">Now streaming</div>
+          <div class="book-meta">
+            <div class="cover-thumb"></div>
+            <div>
+              <p class="book-title">The Ember Archive</p>
+              <p class="book-author">by Liora Kade</p>
+            </div>
+          </div>
+          <div class="waveform">
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+          </div>
+          <div class="player-controls">
+            <button class="circle-btn" aria-label="Previous track">⟲</button>
+            <button class="circle-btn primary-fill" aria-label="Play sample">▶</button>
+            <button class="circle-btn" aria-label="Next track">⟳</button>
+          </div>
+          <div class="progress">
+            <div class="progress-bar"><span style="width: 48%"></span></div>
+            <div class="progress-time">
+              <span>14:22</span>
+              <span>28:45</span>
+            </div>
+          </div>
+        </div>
+        <div class="floating-card">
+          <p class="label">Library snapshot</p>
+          <div class="chip-row">
+            <span class="chip">Fantasy</span>
+            <span class="chip">Mystery</span>
+            <span class="chip">Romance</span>
+            <span class="chip">Sci-fi</span>
+          </div>
+          <div class="mini-stats">
+            <div>
+              <p class="mini-number">+214</p>
+              <p class="mini-label">New titles this week</p>
+            </div>
+            <div>
+              <p class="mini-number">6m 40s</p>
+              <p class="mini-label">Avg. to first listen</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="trust">
+      <p>Trusted by storytellers, narrators, and indie authors</p>
+      <div class="trust-logos">
+        <span>IndieInk</span>
+        <span>StoryForge</span>
+        <span>PageTurn</span>
+        <span>BrightSound</span>
+        <span>DeepRead</span>
+      </div>
+    </section>
+
+    <section class="features" id="features">
+      <div class="section-heading">
+        <p class="eyebrow">Why Narrafied</p>
+        <h2>Audio that moves with your story.</h2>
+        <p>We blend TTS with adaptive music and foley so listeners feel every beat.</p>
+      </div>
+      <div class="feature-grid">
+        <article class="feature-card">
+          <div class="icon">🎧</div>
+          <h3>Cinematic layering</h3>
+          <p>Voice, music, and foley stitched together so even quiet chapters feel alive.</p>
+        </article>
+        <article class="feature-card">
+          <div class="icon">⚡</div>
+          <h3>Upload & go</h3>
+          <p>Drop a PDF, EPUB, or TXT. We split pages, transcribe, and start streaming in minutes.</p>
+        </article>
+        <article class="feature-card">
+          <div class="icon">📱</div>
+          <h3>Listen everywhere</h3>
+          <p>Stream full books or chapters, pick up where you left off, and keep progress synced.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="showcase" id="library">
+      <div class="section-heading">
+        <p class="eyebrow">Featured listens</p>
+        <h2>Curated shelves, updated hourly.</h2>
+      </div>
+      <div class="carousel">
+        <button class="carousel-btn prev" data-target="featured-carousel" aria-label="Previous books">‹</button>
+        <div class="carousel-track" id="featured-carousel">
+          <article class="book-card">
+            <div class="badge">New</div>
+            <div class="book-cover warm"></div>
+            <div class="book-info">
+              <p class="book-title">Violet Static</p>
+              <p class="book-author">Mara Idris · Thriller</p>
+            </div>
+            <button class="secondary-btn" data-open-modal="signup-modal">Play sample</button>
+          </article>
+          <article class="book-card">
+            <div class="badge">Immersive</div>
+            <div class="book-cover cool"></div>
+            <div class="book-info">
+              <p class="book-title">Glass Atlas</p>
+              <p class="book-author">Noah Vale · Sci-fi</p>
+            </div>
+            <button class="secondary-btn" data-open-modal="signup-modal">Play sample</button>
+          </article>
+          <article class="book-card">
+            <div class="badge">Fan favorite</div>
+            <div class="book-cover dusk"></div>
+            <div class="book-info">
+              <p class="book-title">Wildroot</p>
+              <p class="book-author">Leah Canto · Fantasy</p>
+            </div>
+            <button class="secondary-btn" data-open-modal="signup-modal">Play sample</button>
+          </article>
+          <article class="book-card">
+            <div class="badge">Awarded</div>
+            <div class="book-cover ember"></div>
+            <div class="book-info">
+              <p class="book-title">The Echo Coast</p>
+              <p class="book-author">Everett Lane · Mystery</p>
+            </div>
+            <button class="secondary-btn" data-open-modal="signup-modal">Play sample</button>
+          </article>
+          <article class="book-card">
+            <div class="badge">Indie pick</div>
+            <div class="book-cover neon"></div>
+            <div class="book-info">
+              <p class="book-title">Soft Signal</p>
+              <p class="book-author">Ivy Brent · Romance</p>
+            </div>
+            <button class="secondary-btn" data-open-modal="signup-modal">Play sample</button>
+          </article>
+        </div>
+        <button class="carousel-btn next" data-target="featured-carousel" aria-label="Next books">›</button>
+      </div>
+    </section>
+
+    <section class="process" id="process">
+      <div class="section-heading">
+        <p class="eyebrow">How it works</p>
+        <h2>From file to full-blown audio drama.</h2>
+      </div>
+      <div class="process-grid">
+        <article class="process-step">
+          <div class="step-number">01</div>
+          <h3>Drop your book</h3>
+          <p>PDF, EPUB, MOBI, TXT — we ingest and split into bite-size scenes automatically.</p>
+        </article>
+        <article class="process-step">
+          <div class="step-number">02</div>
+          <h3>Pick a sound</h3>
+          <p>Select a genre vibe. We layer music, ambience, and foley tuned to each page.</p>
+        </article>
+        <article class="process-step">
+          <div class="step-number">03</div>
+          <h3>Stream instantly</h3>
+          <p>Listen per-page or full-book with secure streaming and real-time progress sync.</p>
+        </article>
+        <article class="process-step">
+          <div class="step-number">04</div>
+          <h3>Share with readers</h3>
+          <p>Send listeners a link, track completion, and invite them to subscribe for more.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="cta" id="pricing">
+      <div>
+        <p class="eyebrow">Your first story is on us</p>
+        <h2>Start a free account and stream your first dramatized chapter today.</h2>
+        <p class="cta-sub">Upgrade anytime for full-book TTS, background music control, and unlimited uploads.</p>
+      </div>
+      <div class="cta-actions">
+        <button class="primary-btn" data-open-modal="signup-modal">Create account</button>
+        <button class="ghost-btn" data-open-modal="signin-modal">Sign in</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="brand">
+      <div class="logo-mark">N</div>
+      <span class="logo-type">Narrafied</span>
+    </div>
+    <div class="footer-links">
+      <a href="#hero">Home</a>
+      <a href="#features">Features</a>
+      <a href="#library">Library</a>
+      <a href="#process">How it works</a>
+      <a href="#pricing">Pricing</a>
+    </div>
+    <p class="footer-copy">Built for storytellers who want their words heard. © 2024 Narrafied.</p>
+  </footer>
+
+  <div class="modal" id="signup-modal" aria-hidden="true">
+    <div class="modal-content">
+      <button class="close-btn" data-close-modal>×</button>
+      <h3>Create your account</h3>
+      <p class="modal-sub">Upload a book, pick your vibe, and start streaming.</p>
+      <form id="signup-form">
+        <div class="form-group">
+          <label for="signup-username">Username</label>
+          <input type="text" id="signup-username" name="username" required>
+        </div>
+        <div class="form-group">
+          <label for="signup-email">Email</label>
+          <input type="email" id="signup-email" name="email" required>
+        </div>
+        <div class="form-group two-col">
+          <div>
+            <label for="signup-password">Password</label>
+            <input type="password" id="signup-password" name="password" required minlength="6">
+          </div>
+          <div>
+            <label for="signup-state">State</label>
+            <input type="text" id="signup-state" name="state" placeholder="e.g., California" required>
+          </div>
+        </div>
+        <button type="submit" class="primary-btn block">Create account</button>
+        <p class="form-note">Already with us? <a href="#" data-open-modal="signin-modal">Sign in</a></p>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal" id="signin-modal" aria-hidden="true">
+    <div class="modal-content">
+      <button class="close-btn" data-close-modal>×</button>
+      <h3>Welcome back</h3>
+      <p class="modal-sub">Pick up where you left off or explore new releases.</p>
+      <form id="signin-form">
+        <div class="form-group">
+          <label for="signin-username">Username</label>
+          <input type="text" id="signin-username" name="username" required>
+        </div>
+        <div class="form-group">
+          <label for="signin-password">Password</label>
+          <input type="password" id="signin-password" name="password" required>
+        </div>
+        <button type="submit" class="primary-btn block">Sign in</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="./dist/main.js"></script>
+</body>
+</html>
