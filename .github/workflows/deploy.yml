@@ -32,11 +32,12 @@ jobs:
           SSH_HOST: ${{ secrets.DO_SSH_HOST }}
           SSH_USER: ${{ secrets.DO_SSH_USER }}
           SSH_KEY: ${{ secrets.DO_SSH_KEY }}
-          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH || '/var/www/narrafied' }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
         run: |
+          DEPLOY_DIR=${DEPLOY_PATH:-/var/www/narrafied}
           mkdir -p ~/.ssh
           echo "$SSH_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "mkdir -p $DEPLOY_PATH"
-          scp -o StrictHostKeyChecking=no site.tar.gz $SSH_USER@$SSH_HOST:$DEPLOY_PATH/
-          ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "cd $DEPLOY_PATH && tar -xzf site.tar.gz && rm site.tar.gz"
+          ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "mkdir -p $DEPLOY_DIR"
+          scp -o StrictHostKeyChecking=no site.tar.gz $SSH_USER@$SSH_HOST:$DEPLOY_DIR/
+          ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "cd $DEPLOY_DIR && tar -xzf site.tar.gz && rm site.tar.gz"
