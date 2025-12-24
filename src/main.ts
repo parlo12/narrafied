@@ -34,10 +34,6 @@ type UserProfile = {
   created_at: string;
 };
 
-type AccountTypeResponse = {
-  account_type: 'free' | 'paid';
-};
-
 type BooksListResponse = {
   books: Array<{
     id: number;
@@ -45,11 +41,53 @@ type BooksListResponse = {
   }>;
 };
 
-type PlaybackProgress = {
+type SubscriptionStatus = {
+  account_type: 'free' | 'paid';
+  has_subscription: boolean;
+  subscription_status: string;
+  subscription_id?: string;
+  current_period_start?: string;
+  current_period_end?: string;
+  cancel_at_period_end?: boolean;
+  plan_name?: string;
+  plan_amount?: number;
+  plan_currency?: string;
+  plan_interval?: 'month' | 'year';
+};
+
+type MostPlayedBook = {
+  book_id: number;
+  title: string;
+  author: string;
+  genre: string;
+  category: string;
+  cover_url: string;
+  play_count: number;
+  total_listen_time: number;
+  last_played_at: string;
+};
+
+type MostPlayedResponse = {
+  most_played: MostPlayedBook[];
+  count: number;
+  total_plays: number;
   total_listen_time: number;
 };
 
-type ProgressResponse = PlaybackProgress[];
+type GenreStats = {
+  genre: string;
+  book_count: number;
+  total_plays: number;
+  total_listen_time: number;
+};
+
+type GenreStatsResponse = {
+  genres: GenreStats[];
+  genre_count: number;
+  total_books: number;
+  total_plays: number;
+  total_listen_time: number;
+};
 
 type SubscriptionCancelResponse = {
   message: string;
@@ -339,30 +377,62 @@ async function loadProfileDashboard() {
   const createdEl = document.getElementById('profile-created');
   const booksEl = document.getElementById('books-count');
   const hoursEl = document.getElementById('listening-time');
+  const playsEl = document.getElementById('total-plays');
+  const favGenreEl = document.getElementById('favorite-genre');
   const subPlanEl = document.getElementById('subscription-plan');
   const subStatusEl = document.getElementById('subscription-status');
   const cancelBtn = document.getElementById('cancel-subscription-btn');
   const deleteForm = document.getElementById('delete-account-form') as HTMLFormElement | null;
   const deletePassword = document.getElementById('delete-account-password') as HTMLInputElement | null;
+  const mostPlayedList = document.getElementById('most-played-list');
+  const genreList = document.getElementById('genre-list');
 
   try {
-    const [profile, accountType, books, progress] = await Promise.all([
+    const [profile, subscription, books, mostPlayed, genreStats] = await Promise.all([
       api.get<UserProfile>('/user/profile'),
-      api.get<AccountTypeResponse>('/user/account-type'),
+      api.get<SubscriptionStatus>('/user/subscription/status'),
       api.get<BooksListResponse>('/user/books'),
-      api.get<ProgressResponse>('/user/progress'),
+      api.get<MostPlayedResponse>('/user/stats/most-played?limit=3'),
+      api.get<GenreStatsResponse>('/user/stats/by-genre'),
     ]);
 
     nameEl && (nameEl.textContent = profile.username);
     emailEl && (emailEl.textContent = profile.email);
-    accountEl && (accountEl.textContent = accountType.account_type === 'paid' ? 'Premium' : 'Free');
+    accountEl && (accountEl.textContent = subscription.account_type === 'paid' ? 'Premium' : 'Free');
     createdEl && (createdEl.textContent = new Date(profile.created_at).toLocaleDateString());
     booksEl && (booksEl.textContent = `${books.books.length}`);
 
-    const totalSeconds = progress.reduce((acc, item) => acc + (item.total_listen_time || 0), 0);
-    hoursEl && (hoursEl.textContent = formatHours(totalSeconds));
-    subPlanEl && (subPlanEl.textContent = accountType.account_type === 'paid' ? 'Premium Monthly' : 'Free');
-    subStatusEl && (subStatusEl.textContent = accountType.account_type === 'paid' ? 'Active' : 'Not Subscribed');
+    hoursEl && (hoursEl.textContent = formatHours(genreStats.total_listen_time || 0));
+    playsEl && (playsEl.textContent = `${genreStats.total_plays || 0}`);
+    favGenreEl && (favGenreEl.textContent = genreStats.genres?.[0]?.genre || '—');
+    subPlanEl &&
+      (subPlanEl.textContent = subscription.has_subscription
+        ? subscription.plan_name || 'Premium'
+        : 'Free');
+    subStatusEl &&
+      (subStatusEl.textContent = subscription.has_subscription
+        ? subscription.subscription_status || 'Active'
+        : 'Not subscribed');
+
+    if (mostPlayedList) {
+      mostPlayedList.innerHTML = '';
+      (mostPlayed.most_played || []).forEach((item) => {
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${item.title}</strong> · ${item.genre} · ${formatHours(
+          item.total_listen_time
+        )}`;
+        mostPlayedList.appendChild(li);
+      });
+    }
+
+    if (genreList) {
+      genreList.innerHTML = '';
+      (genreStats.genres || []).slice(0, 4).forEach((item) => {
+        const li = document.createElement('li');
+        li.textContent = `${item.genre} — ${formatHours(item.total_listen_time)} (${item.total_plays} plays)`;
+        genreList.appendChild(li);
+      });
+    }
 
     cancelBtn?.addEventListener('click', async () => {
       try {
