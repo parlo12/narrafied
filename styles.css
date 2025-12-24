@@ -864,6 +864,16 @@ main {
   gap: 10px;
 }
 
+.library-cover {
+  width: 100%;
+  height: 160px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ff8a3d, #20d6ff);
+  background-size: cover;
+  background-position: center;
+  border: 1px solid var(--line);
+}
+
 .library-top {
   display: flex;
   justify-content: space-between;

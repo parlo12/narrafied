@@ -41,6 +41,8 @@ type BooksListResponse = {
     author?: string;
     genre?: string;
     status?: string;
+    cover_url?: string;
+    stream_url?: string;
   }>;
 };
 
@@ -511,7 +513,11 @@ async function loadLibrary() {
     books.forEach((book) => {
       const card = document.createElement('article');
       card.className = 'library-card';
+      const coverStyle = book.cover_url
+        ? `style="background-image:url('${book.cover_url}');"`
+        : '';
       card.innerHTML = `
+        <div class="library-cover" ${coverStyle}></div>
         <div class="library-top">
           <div>
             <p class="kpi-value">${book.title}</p>
@@ -520,7 +526,7 @@ async function loadLibrary() {
           <span class="chip">${book.status}</span>
         </div>
         <div class="library-actions">
-          <a class="secondary-btn" href="/listen/${book.id}">Listen</a>
+          <a class="secondary-btn" href="${book.stream_url || '/user/books/stream/proxy/' + book.id}">Listen</a>
           <button class="ghost-btn danger-btn" data-book-id="${book.id}">Delete</button>
         </div>
       `;
