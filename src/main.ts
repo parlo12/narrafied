@@ -24,6 +24,39 @@ type APIError = {
   details?: string;
 };
 
+type UserProfile = {
+  username: string;
+  email: string;
+  account_type: 'free' | 'paid';
+  is_public: boolean;
+  state: string;
+  books_read: number;
+  created_at: string;
+};
+
+type AccountTypeResponse = {
+  account_type: 'free' | 'paid';
+};
+
+type BooksListResponse = {
+  books: Array<{
+    id: number;
+    title: string;
+  }>;
+};
+
+type PlaybackProgress = {
+  total_listen_time: number;
+};
+
+type ProgressResponse = PlaybackProgress[];
+
+type SubscriptionCancelResponse = {
+  message: string;
+  cancel_at_period_end: boolean;
+  current_period_end?: string;
+};
+
 const API_BASE =
   window.location.hostname === 'localhost' ? 'http://localhost:8080' : 'https://narrafied.com';
 
@@ -70,6 +103,32 @@ class APIClient {
 
   getToken(): string | null {
     return this.token;
+  }
+
+  async get<T>(path: string): Promise<T> {
+    const response = await fetch(`${API_BASE}${path}`, {
+      headers: this.headers(),
+    });
+
+    if (!response.ok) {
+      throw (await response.json()) as APIError;
+    }
+
+    return response.json();
+  }
+
+  async post<T>(path: string, body?: object): Promise<T> {
+    const response = await fetch(`${API_BASE}${path}`, {
+      method: 'POST',
+      headers: this.headers(),
+      body: body ? JSON.stringify(body) : undefined,
+    });
+
+    if (!response.ok) {
+      throw (await response.json()) as APIError;
+    }
+
+    return response.json();
   }
 }
 
@@ -175,7 +234,7 @@ function bindAuthForms() {
       showToast('Signed in! Redirecting to your library...', 'success');
       modalManager.closeAll();
       setTimeout(() => {
-        window.location.href = '/library';
+        window.location.href = '/home';
       }, 800);
     } catch (error) {
       const err = error as APIError;
@@ -256,10 +315,101 @@ function wireModalLinks() {
   });
 }
 
+function guardAuth(): string | null {
+  const token = api.getToken();
+  if (!token) {
+    window.location.href = '/';
+    return null;
+  }
+  return token;
+}
+
+function formatHours(seconds: number): string {
+  const hours = seconds / 3600;
+  if (hours < 1) return `${Math.max(1, Math.round(seconds / 60))} min`;
+  return `${hours.toFixed(1)} hrs`;
+}
+
+async function loadProfileDashboard() {
+  if (!guardAuth()) return;
+
+  const nameEl = document.getElementById('profile-name');
+  const emailEl = document.getElementById('profile-email');
+  const accountEl = document.getElementById('profile-account-type');
+  const createdEl = document.getElementById('profile-created');
+  const booksEl = document.getElementById('books-count');
+  const hoursEl = document.getElementById('listening-time');
+  const subPlanEl = document.getElementById('subscription-plan');
+  const subStatusEl = document.getElementById('subscription-status');
+  const cancelBtn = document.getElementById('cancel-subscription-btn');
+  const deleteForm = document.getElementById('delete-account-form') as HTMLFormElement | null;
+  const deletePassword = document.getElementById('delete-account-password') as HTMLInputElement | null;
+
+  try {
+    const [profile, accountType, books, progress] = await Promise.all([
+      api.get<UserProfile>('/user/profile'),
+      api.get<AccountTypeResponse>('/user/account-type'),
+      api.get<BooksListResponse>('/user/books'),
+      api.get<ProgressResponse>('/user/progress'),
+    ]);
+
+    nameEl && (nameEl.textContent = profile.username);
+    emailEl && (emailEl.textContent = profile.email);
+    accountEl && (accountEl.textContent = accountType.account_type === 'paid' ? 'Premium' : 'Free');
+    createdEl && (createdEl.textContent = new Date(profile.created_at).toLocaleDateString());
+    booksEl && (booksEl.textContent = `${books.books.length}`);
+
+    const totalSeconds = progress.reduce((acc, item) => acc + (item.total_listen_time || 0), 0);
+    hoursEl && (hoursEl.textContent = formatHours(totalSeconds));
+    subPlanEl && (subPlanEl.textContent = accountType.account_type === 'paid' ? 'Premium Monthly' : 'Free');
+    subStatusEl && (subStatusEl.textContent = accountType.account_type === 'paid' ? 'Active' : 'Not Subscribed');
+
+    cancelBtn?.addEventListener('click', async () => {
+      try {
+        const data = await api.post<SubscriptionCancelResponse>('/user/subscription/cancel');
+        subStatusEl && (subStatusEl.textContent = data.cancel_at_period_end ? 'Cancels at period end' : 'Canceled');
+        showToast(data.message || 'Subscription updated', 'success');
+      } catch (error) {
+        const err = error as APIError;
+        showToast(err.error || 'Unable to cancel subscription', 'error');
+      }
+    });
+
+    deleteForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const password = deletePassword?.value || '';
+      if (!password) {
+        showToast('Enter your password to delete the account.', 'error');
+        return;
+      }
+      try {
+        await api.post('/user/delete', { password, reason: 'User requested deletion from profile page' });
+        showToast('Account scheduled for deletion. You will be logged out.', 'success');
+        localStorage.removeItem('token');
+        setTimeout(() => (window.location.href = '/'), 1200);
+      } catch (error) {
+        const err = error as APIError;
+        showToast(err.error || 'Could not delete account.', 'error');
+      }
+    });
+  } catch (error) {
+    const err = error as APIError;
+    showToast(err.error || 'Unable to load profile.', 'error');
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-  bindAuthForms();
-  animateStats();
-  initCarousel();
-  initHeroPlayer();
-  wireModalLinks();
+  const page = document.body.dataset.page || 'landing';
+
+  if (page === 'landing') {
+    bindAuthForms();
+    animateStats();
+    initCarousel();
+    initHeroPlayer();
+    wireModalLinks();
+  }
+
+  if (page === 'profile') {
+    loadProfileDashboard();
+  }
 });

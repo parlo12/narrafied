@@ -25,7 +25,7 @@ jobs:
         run: npm run build
 
       - name: Package site
-        run: tar -czf site.tar.gz index.html styles.css privacy-policy.html terms-of-service.html legal.html dist
+        run: tar -czf site.tar.gz index.html styles.css home.html profile.html privacy-policy.html terms-of-service.html legal.html dist
 
       - name: Deploy over SSH
         env:
