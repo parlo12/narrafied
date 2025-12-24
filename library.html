@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Narrafied | Home</title>
+  <title>Narrafied | Library</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css">
 </head>
-<body data-page="home">
+<body data-page="library">
   <div class="bg-texture"></div>
   <header class="top-nav">
     <div class="brand">
@@ -28,14 +28,24 @@
     </div>
   </header>
 
-  <main class="legal-shell">
-    <section class="legal-hero">
-      <p class="eyebrow">Dashboard</p>
-      <h1>Home</h1>
-      <p class="hero-sub">Your listening hub is coming soon. Uploads, queue, and playlists will live here.</p>
+  <main class="dashboard-shell">
+    <section class="dashboard-header">
+      <p class="eyebrow">Library</p>
+      <h1>Your books</h1>
+      <div class="dashboard-meta">
+        <span>Manage uploads, stream audio, or delete entries.</span>
+      </div>
     </section>
+
+    <div id="library-empty" class="panel-card">
+      <h3>No books yet</h3>
+      <p class="muted">Upload a book from the app to see it here.</p>
+    </div>
+
+    <section id="library-list" class="library-grid"></section>
   </main>
 
+  <div id="toast" role="status" aria-live="polite"></div>
   <script type="module" src="./dist/main.js"></script>
 </body>
 </html>

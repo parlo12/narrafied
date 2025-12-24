@@ -38,6 +38,9 @@ type BooksListResponse = {
   books: Array<{
     id: number;
     title: string;
+    author?: string;
+    genre?: string;
+    status?: string;
   }>;
 };
 
@@ -160,6 +163,19 @@ class APIClient {
       method: 'POST',
       headers: this.headers(),
       body: body ? JSON.stringify(body) : undefined,
+    });
+
+    if (!response.ok) {
+      throw (await response.json()) as APIError;
+    }
+
+    return response.json();
+  }
+
+  async delete<T>(path: string): Promise<T> {
+    const response = await fetch(`${API_BASE}${path}`, {
+      method: 'DELETE',
+      headers: this.headers(),
     });
 
     if (!response.ok) {
@@ -468,6 +484,73 @@ async function loadProfileDashboard() {
   }
 }
 
+async function loadLibrary() {
+  if (!guardAuth()) return;
+
+  const listEl = document.getElementById('library-list');
+  const emptyEl = document.getElementById('library-empty');
+
+  const renderEmpty = () => {
+    if (listEl) listEl.innerHTML = '';
+    if (emptyEl) emptyEl.classList.remove('hidden');
+  };
+
+  try {
+    const data = await api.get<BooksListResponse>('/user/books');
+    const books = data.books || [];
+
+    if (!books.length) {
+      renderEmpty();
+      return;
+    }
+
+    if (emptyEl) emptyEl.classList.add('hidden');
+    if (!listEl) return;
+
+    listEl.innerHTML = '';
+    books.forEach((book) => {
+      const card = document.createElement('article');
+      card.className = 'library-card';
+      card.innerHTML = `
+        <div class="library-top">
+          <div>
+            <p class="kpi-value">${book.title}</p>
+            <p class="kpi-label">${book.author || 'Unknown'} · ${book.genre || '—'}</p>
+          </div>
+          <span class="chip">${book.status}</span>
+        </div>
+        <div class="library-actions">
+          <a class="secondary-btn" href="/listen/${book.id}">Listen</a>
+          <button class="ghost-btn danger-btn" data-book-id="${book.id}">Delete</button>
+        </div>
+      `;
+      listEl.appendChild(card);
+    });
+
+    listEl.querySelectorAll<HTMLButtonElement>('[data-book-id]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const bookId = btn.dataset.bookId;
+        if (!bookId) return;
+        const confirmDelete = window.confirm('Delete this book from your library?');
+        if (!confirmDelete) return;
+        try {
+          await api.delete(`/user/books/${bookId}`);
+          showToast('Book deleted', 'success');
+          btn.closest('.library-card')?.remove();
+          if (!listEl.childElementCount) renderEmpty();
+        } catch (error) {
+          const err = error as APIError;
+          showToast(err.error || 'Unable to delete book.', 'error');
+        }
+      });
+    });
+  } catch (error) {
+    const err = error as APIError;
+    showToast(err.error || 'Unable to load library.', 'error');
+    renderEmpty();
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const page = document.body.dataset.page || 'landing';
 
@@ -481,5 +564,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (page === 'profile') {
     loadProfileDashboard();
+  }
+
+  if (page === 'library') {
+    loadLibrary();
   }
 });
